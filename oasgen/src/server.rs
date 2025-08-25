@@ -228,6 +228,7 @@ fn modify_parameter_names(operation: &mut Operation, path: &str) {
 
     for (part, param) in path_parts.zip(path_params) {
         param.name = part.to_string();
+        param.required = true;
     }
 }
 
