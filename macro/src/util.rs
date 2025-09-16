@@ -44,6 +44,7 @@ pub fn impl_OaSchema_schema(fields: &[Field], docstring: Option<String>) -> Toke
             }
 
             let name = f.attrs.name().deserialize_name();
+            let description = attr.description;
             let ty = f.ty;
             let schema = quote! {
                 <#ty as ::oasgen::OaSchema>::schema()
@@ -65,12 +66,32 @@ pub fn impl_OaSchema_schema(fields: &[Field], docstring: Option<String>) -> Toke
                     quote! { o.required_mut().push(#name.to_string()); }
                 }).unwrap_or_default();
                 let schema_ref = if attr.inline {
-                    quote! {
-                        <#ty as ::oasgen::OaSchema>::schema()
+                    if let Some(description) = &description {
+                        quote! {
+                            {
+                                let mut s = <#ty as ::oasgen::OaSchema>::schema();
+                                s.description = Some(#description.into());
+                                s
+                            }
+                        }
+                    } else {
+                        quote! {
+                            <#ty as ::oasgen::OaSchema>::schema()
+                        }
                     }
                 } else {
-                    quote! {
-                        <#ty as ::oasgen::OaSchema>::schema_ref()
+                    if let Some(description) = &description {
+                        quote! {
+                            {
+                                let mut s = <#ty as ::oasgen::OaSchema>::schema_ref().into_item().expect("Reference must resolve to item");
+                                s.description = Some(#description.into());
+                                ::oasgen::ReferenceOr::Item(s)
+                            }
+                        }
+                    } else {
+                        quote! {
+                            <#ty as ::oasgen::OaSchema>::schema_ref()
+                        }
                     }
                 };
                 quote! {
