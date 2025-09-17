@@ -83,9 +83,15 @@ pub fn impl_OaSchema_schema(fields: &[Field], docstring: Option<String>) -> Toke
                     if let Some(description) = &description {
                         quote! {
                             {
-                                let mut s = <#ty as ::oasgen::OaSchema>::schema_ref().into_item().expect("Reference must resolve to item");
-                                s.description = Some(#description.into());
-                                ::oasgen::ReferenceOr::Item(s)
+                                let schema_ref = <#ty as ::oasgen::OaSchema>::schema_ref();
+                                let schema_item = match schema_ref.clone().into_item() {
+                                    Some(mut s) => {
+                                        s.description = Some(#description.into());
+                                        ::oasgen::ReferenceOr::Item(s)
+                                    }
+                                    None => schema_ref,
+                                };
+                                schema_item
                             }
                         }
                     } else {
