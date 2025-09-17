@@ -52,9 +52,11 @@ components:
       required:
       - code
     SendCode:
+      description: Send a code to a mobile number
       type: object
       properties:
         mobile:
+          description: Mobile phone number
           type: string
       required:
       - mobile
@@ -62,6 +64,7 @@ components:
       type: object
       properties:
         found_account:
+          description: Indicates account found
           type: boolean
       required:
       - found_account

@@ -44,6 +44,7 @@ pub fn impl_OaSchema_schema(fields: &[Field], docstring: Option<String>) -> Toke
             }
 
             let name = f.attrs.name().deserialize_name();
+            let description = attr.description;
             let ty = f.ty;
             let schema = quote! {
                 <#ty as ::oasgen::OaSchema>::schema()
@@ -65,12 +66,38 @@ pub fn impl_OaSchema_schema(fields: &[Field], docstring: Option<String>) -> Toke
                     quote! { o.required_mut().push(#name.to_string()); }
                 }).unwrap_or_default();
                 let schema_ref = if attr.inline {
-                    quote! {
-                        <#ty as ::oasgen::OaSchema>::schema()
+                    if let Some(description) = &description {
+                        quote! {
+                            {
+                                let mut s = <#ty as ::oasgen::OaSchema>::schema();
+                                s.description = Some(#description.into());
+                                s
+                            }
+                        }
+                    } else {
+                        quote! {
+                            <#ty as ::oasgen::OaSchema>::schema()
+                        }
                     }
                 } else {
-                    quote! {
-                        <#ty as ::oasgen::OaSchema>::schema_ref()
+                    if let Some(description) = &description {
+                        quote! {
+                            {
+                                let schema_ref = <#ty as ::oasgen::OaSchema>::schema_ref();
+                                let schema_item = match schema_ref.clone().into_item() {
+                                    Some(mut s) => {
+                                        s.description = Some(#description.into());
+                                        ::oasgen::ReferenceOr::Item(s)
+                                    }
+                                    None => schema_ref,
+                                };
+                                schema_item
+                            }
+                        }
+                    } else {
+                        quote! {
+                            <#ty as ::oasgen::OaSchema>::schema_ref()
+                        }
                     }
                 };
                 quote! {

@@ -2,13 +2,16 @@ use actix_web::web::{Json, Query, Data};
 use oasgen::{oasgen, OaSchema, Server};
 use serde::{Deserialize, Serialize};
 
+/// Send a code to a mobile number
 #[derive(Deserialize, OaSchema)]
 pub struct SendCode {
+    /// Mobile phone number
     pub mobile: String,
 }
 
 #[derive(Serialize, OaSchema)]
 pub struct SendCodeResponse {
+    /// Indicates account found
     pub found_account: bool,
 }
 
