@@ -12,11 +12,11 @@ use oasgen_core::{OaSchema};
 
 #[cfg_attr(docsrs, doc(cfg(feature = "actix")))]
 #[cfg(feature = "actix")]
-mod actix;
+pub mod actix;
 #[cfg_attr(docsrs, doc(cfg(feature = "axum")))]
 #[cfg(feature = "axum")]
-mod axum;
-mod none;
+pub mod axum;
+pub mod none;
 
 static OPERATION_LOOKUP: Lazy<HashMap<&'static str, &'static (dyn Fn() -> Operation + Send + Sync)>> = Lazy::new(|| {
     let mut map = HashMap::new();

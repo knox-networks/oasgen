@@ -1,7 +1,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 #![allow(unused)]
-mod server;
+pub mod server;
 mod format;
 
 pub use format::*;
