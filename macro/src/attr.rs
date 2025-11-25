@@ -9,6 +9,7 @@ use syn::LitStr;
 /// For example, `skip` will be applied with either `#[oasgen(skip)]` or `#[serde(skip)]`.
 #[derive(StructMeta, Default)]
 pub struct FieldAttributes {
+    pub description: Option<LitStr>,
     pub skip: bool,
     pub skip_serializing_if: Option<LitStr>,
     /// By default, oasgen will use references when possible
@@ -46,6 +47,7 @@ impl TryFrom<&Vec<syn::Attribute>> for FieldAttributes {
     type Error = syn::Error;
 
     fn try_from(attrs: &Vec<syn::Attribute>) -> Result<Self, Self::Error> {
+        let docstring = get_docstring(attrs.as_slice()).expect("Failed to parse docstring");
         let attrs = attrs
             .into_iter()
             .filter(|a| a.path().get_ident().map(|i| i == "oasgen").unwrap_or(false))
@@ -56,6 +58,10 @@ impl TryFrom<&Vec<syn::Attribute>> for FieldAttributes {
         for attr in attrs {
             result.merge_with(&attr);
         }
+        if let Some(docstring) = docstring {
+            result.description = Some(LitStr::new(&docstring, proc_macro2::Span::call_site()));
+        }
+
         Ok(result)
     }
 }

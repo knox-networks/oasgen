@@ -8,6 +8,7 @@ paths:
       operationId: get_task
       parameters:
       - name: id
+        required: true
         schema:
           type: integer
         in: path
@@ -18,11 +19,13 @@ paths:
       operationId: get_stuff
       parameters:
       - name: id
+        required: true
         schema:
           type: integer
         in: path
         style: simple
       - name: tu
+        required: true
         schema:
           type: integer
         in: path

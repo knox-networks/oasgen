@@ -18,7 +18,7 @@ paths:
         required: true
       responses:
         '200':
-          description: ''
+          description: OK
           content:
             application/json:
               schema:
@@ -30,6 +30,7 @@ components:
       description: Send a code to a mobile number
       properties:
         mobile:
+          description: Mobile phone number
           type: string
       required:
       - mobile
@@ -37,6 +38,7 @@ components:
       type: object
       properties:
         found_account:
+          description: Indicates account found
           type: boolean
       required:
       - found_account
