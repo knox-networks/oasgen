@@ -8,7 +8,7 @@ paths:
       tags:
       - tasks
       summary: Create a new task with error cases
-      operationId: create_task
+      operationId: tasks_create_task
       requestBody:
         content:
           application/json:
