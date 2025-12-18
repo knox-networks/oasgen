@@ -131,7 +131,6 @@ pub fn oasgen(attr: TokenStream, input: TokenStream) -> TokenStream {
         })
         .collect::<Vec<_>>();
     let first_tag = attr.tags.iter().flatten().map(|v| v.value()).take(1).next().unwrap_or_default();
-    // println!("#####:{tags_vec:?}");
 
     let summary = attr
         .summary
