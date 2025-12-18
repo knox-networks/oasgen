@@ -18,7 +18,24 @@ pub mod __private {
     pub use oasgen_core::{SchemaRegister, OperationRegister};
 
     pub fn fn_path_to_op_id(type_name: &str) -> Option<String> {
+        println!("###############:'{type_name}'");
         Some(type_name.split("::").skip(1).collect::<Vec<_>>().join("_"))
+    }
+
+    pub fn tags_and_fn_path_to_op_id(tag: &str, module_path: &str, type_name: &str) -> Option<String> {
+        println!("###############:'{tag}'");
+        println!("###############:'{module_path}'");
+        println!("###############:'{type_name}'");
+        let mut module = module_path.split("::").skip(1).take(1).map(|v| v.to_string()).collect::<Vec<_>>();
+
+        if !tag.is_empty() {
+            module.push(tag.to_string());
+        }
+        module.push(type_name.to_string());
+
+        let res = module.join("_");
+
+        Some(res)
     }
 }
 
