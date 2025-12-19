@@ -20,19 +20,6 @@ pub mod __private {
     pub fn fn_path_to_op_id(type_name: &str) -> Option<String> {
         Some(type_name.split("::").skip(1).collect::<Vec<_>>().join("_"))
     }
-
-    pub fn tags_and_fn_path_to_op_id(tag: &str, module_path: &str, type_name: &str) -> Option<String> {
-        let mut module = module_path.split("::").skip(1).take(1).map(|v| v.to_string()).collect::<Vec<_>>();
-
-        if !tag.is_empty() {
-            module.push(tag.to_string().to_lowercase());
-        }
-        module.push(type_name.to_string());
-
-        let res = module.join("_");
-
-        Some(res)
-    }
 }
 
 #[macro_export]

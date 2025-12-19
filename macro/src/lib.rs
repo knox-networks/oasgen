@@ -130,8 +130,6 @@ pub fn oasgen(attr: TokenStream, input: TokenStream) -> TokenStream {
             }
         })
         .collect::<Vec<_>>();
-    let first_tag = attr.tags.iter().flatten().map(|v| v.value()).take(1).next().unwrap_or_default();
-
     let summary = attr
         .summary
         .as_ref()
@@ -151,7 +149,7 @@ pub fn oasgen(attr: TokenStream, input: TokenStream) -> TokenStream {
         }
     } else {
         quote! {
-            ::oasgen::__private::tags_and_fn_path_to_op_id(#first_tag, module_path!(), #name)
+            Some(#name.to_string())
         }
     };
     let submit = quote! {

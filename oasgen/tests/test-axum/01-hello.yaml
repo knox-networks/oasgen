@@ -5,7 +5,7 @@ info:
 paths:
   /hello:
     post:
-      operationId: auth_send_code
+      operationId: send_code
       tags:
         - auth
       description: Endpoint to login by sending a code to the given mobile number
