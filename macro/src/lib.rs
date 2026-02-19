@@ -7,7 +7,7 @@ use serde_derive_internals::{
     Ctxt, Derive,
 };
 use syn::{PathArguments, GenericArgument, TypePath, Type, ReturnType, FnArg, parse_macro_input, DeriveInput,visit::Visit};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use util::{derive_oaschema_enum, derive_oaschema_struct};
 use crate::attr::{get_docstring, OperationAttributes};
 use crate::util::derive_oaschema_newtype;
@@ -47,11 +47,11 @@ pub fn oasgen(attr: TokenStream, input: TokenStream) -> TokenStream {
     let mut collector = ErrorCollector::default();
     collector.visit_block(&ast.block);
 
-    let mut errors_by_code: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut errors_by_code: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
 
     for (status_tokens, message) in &collector.errors {
         let key = status_tokens.to_string();
-        errors_by_code.entry(key).or_default().push(message.clone());
+        errors_by_code.entry(key).or_default().insert(message.clone());
     }
 
     let mut attr =
@@ -106,10 +106,12 @@ pub fn oasgen(attr: TokenStream, input: TokenStream) -> TokenStream {
         .map(|(status_str, messages)| {
             let status_tokens: TokenStream = status_str.parse().expect("Invalid tokens");
 
-            let description = if messages.len() == 1 {
-                messages[0].clone()
+            let messages_vec: Vec<&String> = messages.iter().collect();
+            let description = if messages_vec.len() == 1 {
+                messages_vec[0].clone()
             } else {
-                format!("Possible reasons:\n- {}", messages.join("\n- "))
+                let joined = messages_vec.iter().map(|s| s.as_str()).collect::<Vec<_>>().join("\n- ");
+                format!("Possible reasons:\n- {}", joined)
             };
             let status_tokens_2: proc_macro2::TokenStream = status_tokens.clone().into();
             quote! {
